@@ -43,6 +43,10 @@ public interface OptionComponentFactory<T> {
         } else {
             return OptionComponents.createTextBox(model, option, configTextBox -> {
                 configTextBox.configureForNumber(option.clazz());
+
+                if (option.constraint() != null) {
+                    configTextBox.applyPredicate(configTextBox.applyPredicate().and(option.constraint()::test));
+                }
             });
         }
     };
