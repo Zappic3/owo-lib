@@ -45,7 +45,7 @@ public interface OptionComponentFactory<T> {
                 configTextBox.configureForNumber(option.clazz());
 
                 if (option.constraint() != null) {
-                    configTextBox.applyPredicate(configTextBox.applyPredicate().and(option.constraint()::test));
+                    configTextBox.nonTextPredicate(option.constraint()::test);
                 }
             });
         }

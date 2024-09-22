@@ -53,8 +53,6 @@ public abstract class ConfigWrapper<C> {
 
     private static final Map<String, Class<?>> KNOWN_CONFIG_CLASSES = new HashMap<>();
 
-    private static final Map<Class<?>, Method> REGISTERED_PARSE_METHODS = new HashMap<>();
-
     protected final String name;
     protected final C instance;
 
@@ -86,28 +84,6 @@ public abstract class ConfigWrapper<C> {
 
         var configAnnotation = clazz.getAnnotation(Config.class);
         this.name = configAnnotation.name();
-
-        try {
-            REGISTERED_PARSE_METHODS.put(Byte.class, Byte.class.getMethod("parseByte", String.class));
-            REGISTERED_PARSE_METHODS.put(byte.class, Byte.class.getMethod("parseByte", String.class));
-
-            REGISTERED_PARSE_METHODS.put(Short.class, Short.class.getMethod("parseShort", String.class));
-            REGISTERED_PARSE_METHODS.put(short.class, Short.class.getMethod("parseShort", String.class));
-
-            REGISTERED_PARSE_METHODS.put(Integer.class, Integer.class.getMethod("parseInt", String.class));
-            REGISTERED_PARSE_METHODS.put(int.class, Integer.class.getMethod("parseInt", String.class));
-
-            REGISTERED_PARSE_METHODS.put(Long.class, Long.class.getMethod("parseLong", String.class));
-            REGISTERED_PARSE_METHODS.put(long.class, Long.class.getMethod("parseLong", String.class));
-
-            REGISTERED_PARSE_METHODS.put(Float.class, Float.class.getMethod("parseFloat", String.class));
-            REGISTERED_PARSE_METHODS.put(float.class, Float.class.getMethod("parseFloat", String.class));
-
-            REGISTERED_PARSE_METHODS.put(Double.class, Double.class.getMethod("parseDouble", String.class));
-            REGISTERED_PARSE_METHODS.put(double.class, Double.class.getMethod("parseDouble", String.class));
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Failed to populate REGISTERED_PARSE_METHODS map in config " + this.name, e);
-        }
 
         if (KNOWN_CONFIG_CLASSES.put(this.name, this.getClass()) != null) {
             throw new IllegalStateException("Config name '" + this.name + "'"
@@ -378,49 +354,12 @@ public abstract class ConfigWrapper<C> {
         }
     }
 
-    /**
-     * Invokes the provided method handle and passes the provided value as parameter.
-     * If the parameter type of the predicate does not match the type of the provided value,
-     * and the provided value is a String, an attempt is made to convert the String to the
-     * required parameter type. This is particularly relevant when using {@code @PredicateConstraints}
-     * on non-String values.
-     *
-     * @param predicate the MethodHandle to invoke
-     * @param value the argument that is passed to the MethodHandle
-     * @return the result of the predicate method invocation. If no registered parse method is found
-     * for the target type when needed, it returns {@code true} by default to ensure compatability with the previous implementation.
-     */
     private boolean invokePredicate(MethodHandle predicate, Object value) {
         try {
-            Class<?> firstParamType = predicate.type().parameterType(0);
-            if (firstParamType != value.getClass() && value.getClass() == String.class) {
-                Method parseMethod = REGISTERED_PARSE_METHODS.get(firstParamType);
-
-                if (parseMethod != null) {
-                    value = REGISTERED_PARSE_METHODS.get(firstParamType).invoke(null, value);
-                } else {
-                    LOGGER.warn("No registered parse method for class '{}' found", firstParamType);
-                    return true;
-                }
-            }
-
             return (boolean) predicate.invoke(value);
         } catch (Throwable e) {
             throw new RuntimeException("Could not invoke predicate", e);
         }
-    }
-
-    /**
-     * Registers a parsing method for the specified class type in the {@code REGISTERED_PARSE_METHODS} map.
-     * This method allows you to associate a class type with a specific method that can parse a {@code String}
-     * into an instance of that class type.
-     *
-     * @param classTyp the class type for which the parse method is being registered (e.g., {@code Integer.class} or {@code double.class})
-     * @param parseMethod the method that will be used to parse a {@code String} into an instance of the specified class type
-     * @throws NoSuchMethodException if the provided method does not exist or cannot be accessed
-     */
-    public void registerParseMethod(Class<?> classTyp, Method parseMethod) throws NoSuchMethodException {
-        REGISTERED_PARSE_METHODS.put(classTyp, parseMethod);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

@@ -20,13 +20,14 @@ public class ConfigTextBox extends TextBoxComponent implements OptionValueProvid
     protected int invalidColor = 0xEB1D36, validColor = 0x28FFBF;
     protected Function<String, Object> valueParser = s -> s;
     protected Predicate<String> inputPredicate = s -> true, applyPredicate = s -> true;
+    protected Predicate<Object> nonTextPredicate = s -> true;
 
     public ConfigTextBox() {
         super(Sizing.fixed(0));
         this.setMaxLength(Integer.MAX_VALUE);
 
         this.textValue.observe(s -> {
-            this.setEditableColor(this.applyPredicate.test(s) ? this.validColor : this.invalidColor);
+            this.setEditableColor(this.applyPredicate.test(s) && this.nonTextPredicate.test(this.valueParser.apply(s)) ? this.validColor : this.invalidColor);
         });
     }
 
@@ -82,6 +83,15 @@ public class ConfigTextBox extends TextBoxComponent implements OptionValueProvid
 
     public Predicate<String> applyPredicate() {
         return applyPredicate;
+    }
+
+    public ConfigTextBox nonTextPredicate(Predicate<Object> nonTextPredicate) {
+        this.nonTextPredicate = nonTextPredicate;
+        return this;
+    }
+
+    public Predicate<Object> nonTextPredicate() {
+        return nonTextPredicate;
     }
 
     public ConfigTextBox invalidColor(int invalidColor) {
