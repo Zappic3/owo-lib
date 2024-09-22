@@ -20,18 +20,6 @@ public class UwuConfigModel {
     @RegexConstraint("[A-Za-z]{1,3}")
     public String regex = "yes";
 
-    @PredicateConstraint("intPredicateFunction")
-    public int predicint = 15;
-
-    public boolean exampleBoolean = true;       // for boolean
-    public byte exampleByte = 10;                // for byte
-    public short exampleShort = 100;              // for short
-    public int exampleInt = 15;                   // for int
-    public long exampleLong = 1000L;              // for long
-    @PredicateConstraint("floatPredicateFunction")
-    public float exampleFloat = 5.5f;             // for float
-    public double exampleDouble = 10.99;          // for double
-
     @Nest
     @Expanded
     @SectionHeader("nesting_yo?")
@@ -85,13 +73,5 @@ public class UwuConfigModel {
         // this could be arbitrarily complex code, but
         // we'll keep it simple for this demonstration
         return list.size() == 5;
-    }
-
-    public static boolean intPredicateFunction(int num) {
-        return num <= 64;
-    }
-
-    public static boolean floatPredicateFunction(float num) {
-        return num <= 11.5f;
     }
 }
