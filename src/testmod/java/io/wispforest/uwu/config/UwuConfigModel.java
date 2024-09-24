@@ -20,6 +20,9 @@ public class UwuConfigModel {
     @RegexConstraint("[A-Za-z]{1,3}")
     public String regex = "yes";
 
+    @PredicateConstraint("predicintPredicateFunction")
+    public int predicint = 19;
+
     @Nest
     @Expanded
     @SectionHeader("nesting_yo?")
@@ -73,5 +76,9 @@ public class UwuConfigModel {
         // this could be arbitrarily complex code, but
         // we'll keep it simple for this demonstration
         return list.size() == 5;
+    }
+
+    public static boolean predicintPredicateFunction(int n) {
+        return n <= 64;
     }
 }

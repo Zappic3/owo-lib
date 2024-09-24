@@ -30,6 +30,7 @@
   "text.config.uwu.option.aValue": "A Value",
   "text.config.uwu.option.regex": "Regex'd",
   "text.config.uwu.option.regex.tooltip": "Regex tooltip, this is epic",
+  "text.config.uwu.option.predicint": "Predicint",
   "text.config.uwu.category.nestingTime": "Nesting Time",
   "text.config.uwu.category.nestingTime.tooltip": "Yep, it's nesting Time",
   "text.config.uwu.option.nestingTime.togglee": "Togglee",
